@@ -161,7 +161,7 @@ test_dma_add_regions_mixed(void **state __attribute__((unused)))
     expect_value(__wrap_dma_controller_add_region, offset, r[1].offset);
     expect_value(__wrap_dma_controller_add_region, prot, r[1].prot);
 
-    assert_int_equal(0, handle_dma_map_or_unmap(&vfu_ctx, sizeof r, true, &fd, 1, r));
+    assert_int_equal(0, handle_dma_map_or_unmap(&vfu_ctx, sizeof(r), true, &fd, 1, r));
 }
 
 /*
@@ -274,7 +274,7 @@ test_dma_controller_add_region_no_fd(void **state __attribute__((unused)))
     off_t offset = 0;
     dma_memory_region_t *r;
 
-    memset(dma, 0, sizeof (*dma) + sizeof(dma_memory_region_t));
+    memset(dma, 0, sizeof(*dma) + sizeof(dma_memory_region_t));
 
     dma->vfu_ctx = &vfu_ctx;
     dma->max_regions = 1;
@@ -641,10 +641,10 @@ test_pci_caps(void **state __attribute__((unused)))
     vfu_ctx_t vfu_ctx = { .pci.config_space = &config_space,
                           .reg_info = reg_info,
     };
-    struct vsc *vsc1 = alloca(sizeof (*vsc1) + 3);
-    struct vsc *vsc2 = alloca(sizeof (*vsc2) + 13);
-    struct vsc *vsc3 = alloca(sizeof (*vsc3) + 13);
-    struct vsc *vsc4 = alloca(sizeof (*vsc4) + 13);
+    struct vsc *vsc1 = alloca(sizeof(*vsc1) + 3);
+    struct vsc *vsc2 = alloca(sizeof(*vsc2) + 13);
+    struct vsc *vsc3 = alloca(sizeof(*vsc3) + 13);
+    struct vsc *vsc4 = alloca(sizeof(*vsc4) + 13);
     struct pmcap pm = { { 0 } };
     size_t expoffsets[] = {
         PCI_STD_HEADER_SIZEOF,
@@ -657,10 +657,10 @@ test_pci_caps(void **state __attribute__((unused)))
     size_t offset;
     ssize_t ret;
 
-    memset(&config_space, 0, sizeof (config_space));
+    memset(&config_space, 0, sizeof(config_space));
 
     vfu_ctx.reg_info = calloc(VFU_PCI_DEV_NUM_REGIONS,
-                              sizeof (*vfu_ctx.reg_info));
+                              sizeof(*vfu_ctx.reg_info));
 
     pm.hdr.id = PCI_CAP_ID_PM;
     pm.pmcs.raw = 0xef01;
@@ -770,14 +770,14 @@ test_pci_caps(void **state __attribute__((unused)))
     pm.pmcs.raw = 0xffff;
 
     ret = pci_config_space_access(&vfu_ctx, (char *)&pm.pmcs,
-                                  sizeof (struct pmcs), expoffsets[0] +
+                                  sizeof(struct pmcs), expoffsets[0] +
                                   offsetof(struct pmcap, pmcs), true);
 
-    assert_int_equal(sizeof (struct pmcs), ret);
+    assert_int_equal(sizeof(struct pmcs), ret);
 
     assert_memory_equal(pci_config_space_ptr(&vfu_ctx, expoffsets[0] +
                                              offsetof(struct pmcap, pmcs)),
-                        &pm.pmcs, sizeof (struct pmcs));
+                        &pm.pmcs, sizeof(struct pmcs));
 
     /* check read only capability */
 
@@ -813,9 +813,9 @@ test_pci_ext_caps_region_cb(vfu_ctx_t *vfu_ctx, char *buf, size_t count,
     uint8_t *ptr = pci_config_space_ptr(vfu_ctx, offset);
 
     assert_int_equal(is_write, true);
-    assert_int_equal(offset, PCI_CFG_SPACE_SIZE + sizeof (struct dsncap) +
-                     sizeof (struct pcie_ext_cap_vsc_hdr) + 8 +
-                     sizeof (struct pcie_ext_cap_vsc_hdr));
+    assert_int_equal(offset, PCI_CFG_SPACE_SIZE + sizeof(struct dsncap) +
+                     sizeof(struct pcie_ext_cap_vsc_hdr) + 8 +
+                     sizeof(struct pcie_ext_cap_vsc_hdr));
     assert_int_equal(count, 10);
     assert_memory_equal(ptr, "Hello world.", 10);
     memcpy(ptr, buf, count);
@@ -833,15 +833,15 @@ test_pci_ext_caps(void **state __attribute__((unused)))
                           .reg_info = reg_info,
     };
 
-    struct pcie_ext_cap_vsc_hdr *vsc1 = alloca(sizeof (*vsc1) + 5);
-    struct pcie_ext_cap_vsc_hdr *vsc2 = alloca(sizeof (*vsc2) + 13);
-    struct pcie_ext_cap_vsc_hdr *vsc3 = alloca(sizeof (*vsc3) + 13);
-    struct pcie_ext_cap_vsc_hdr *vsc4 = alloca(sizeof (*vsc4) + 13);
+    struct pcie_ext_cap_vsc_hdr *vsc1 = alloca(sizeof(*vsc1) + 5);
+    struct pcie_ext_cap_vsc_hdr *vsc2 = alloca(sizeof(*vsc2) + 13);
+    struct pcie_ext_cap_vsc_hdr *vsc3 = alloca(sizeof(*vsc3) + 13);
+    struct pcie_ext_cap_vsc_hdr *vsc4 = alloca(sizeof(*vsc4) + 13);
     struct pcie_ext_cap_hdr *hdr;
     size_t expoffsets[] = {
         PCI_CFG_SPACE_SIZE,
-        PCI_CFG_SPACE_SIZE + sizeof (struct dsncap),
-        PCI_CFG_SPACE_SIZE + sizeof (struct dsncap) + sizeof (*vsc1) + 8,
+        PCI_CFG_SPACE_SIZE + sizeof(struct dsncap),
+        PCI_CFG_SPACE_SIZE + sizeof(struct dsncap) + sizeof(*vsc1) + 8,
         512,
         600
     };
@@ -852,7 +852,7 @@ test_pci_ext_caps(void **state __attribute__((unused)))
     vfu_ctx.pci.type = VFU_PCI_TYPE_EXPRESS;
 
     vfu_ctx.reg_info = calloc(VFU_PCI_DEV_NUM_REGIONS,
-                              sizeof (*vfu_ctx.reg_info));
+                              sizeof(*vfu_ctx.reg_info));
 
     vfu_ctx.reg_info[VFU_PCI_DEV_CFG_REGION_IDX].cb = test_pci_ext_caps_region_cb;
     vfu_ctx.reg_info[VFU_PCI_DEV_CFG_REGION_IDX].size = PCI_CFG_SPACE_EXP_SIZE;
@@ -862,16 +862,16 @@ test_pci_ext_caps(void **state __attribute__((unused)))
     dsn.sn_hi = 0x8;
 
     vsc1->hdr.id = PCI_EXT_CAP_ID_VNDR;
-    vsc1->len = sizeof (*vsc1) + 5;
+    vsc1->len = sizeof(*vsc1) + 5;
     memcpy(vsc1->data, "abcde", 5);
     vsc2->hdr.id = PCI_EXT_CAP_ID_VNDR;
-    vsc2->len = sizeof (*vsc2) + 13;
+    vsc2->len = sizeof(*vsc2) + 13;
     memcpy(vsc2->data, "Hello world.", 12);
     vsc3->hdr.id = PCI_EXT_CAP_ID_VNDR;
-    vsc3->len = sizeof (*vsc3) + 13;
+    vsc3->len = sizeof(*vsc3) + 13;
     memcpy(vsc3->data, "Hello world.", 12);
     vsc4->hdr.id = PCI_EXT_CAP_ID_VNDR;
-    vsc4->len = sizeof (*vsc4) + 13;
+    vsc4->len = sizeof(*vsc4) + 13;
     memcpy(vsc4->data, "Hello world.", 12);
 
     offset = vfu_pci_add_capability(&vfu_ctx, 4096, VFU_CAP_FLAG_EXTENDED, &dsn);
@@ -993,12 +993,12 @@ static void
 test_device_get_info(void **state UNUSED)
 {
     vfu_ctx_t vfu_ctx = { .nr_regions = 0xdeadbeef };
-    struct vfio_device_info d_in = { .argsz = sizeof (d_in) };
+    struct vfio_device_info d_in = { .argsz = sizeof(d_in) };
     struct vfio_device_info d_out;
 
-    assert_int_equal(0, handle_device_get_info(&vfu_ctx, sizeof (d_in),
+    assert_int_equal(0, handle_device_get_info(&vfu_ctx, sizeof(d_in),
                                                &d_in, &d_out));
-    assert_int_equal(sizeof (d_out), d_out.argsz);
+    assert_int_equal(sizeof(d_out), d_out.argsz);
     assert_int_equal(VFIO_DEVICE_FLAGS_PCI | VFIO_DEVICE_FLAGS_RESET,
                      d_out.flags);
     assert_int_equal(vfu_ctx.nr_regions, d_out.num_regions);
@@ -1013,12 +1013,12 @@ static void
 test_device_get_info_compat(void **state UNUSED)
 {
     vfu_ctx_t vfu_ctx = { .nr_regions = 0xdeadbeef };
-    struct vfio_device_info d_in = { .argsz = sizeof (d_in) + 1 };
+    struct vfio_device_info d_in = { .argsz = sizeof(d_in) + 1 };
     struct vfio_device_info d_out;
 
-    assert_int_equal(0, handle_device_get_info(&vfu_ctx, sizeof (d_in) + 1,
+    assert_int_equal(0, handle_device_get_info(&vfu_ctx, sizeof(d_in) + 1,
                                                &d_in, &d_out));
-    assert_int_equal(sizeof (d_out), d_out.argsz);
+    assert_int_equal(sizeof(d_out), d_out.argsz);
     assert_int_equal(VFIO_DEVICE_FLAGS_PCI | VFIO_DEVICE_FLAGS_RESET,
                      d_out.flags);
     assert_int_equal(vfu_ctx.nr_regions, d_out.num_regions);
@@ -1026,7 +1026,7 @@ test_device_get_info_compat(void **state UNUSED)
 
     /* fewer fields */
     assert_int_equal(-EINVAL,
-                     handle_device_get_info(&vfu_ctx, (sizeof (d_in)) - 1,
+                     handle_device_get_info(&vfu_ctx, (sizeof(d_in)) - 1,
                                             &d_in, &d_out));
 }
 
@@ -1400,9 +1400,9 @@ test_dirty_pages_without_dma(UNUSED void **state)
         .flags = {
             .type = VFIO_USER_F_TYPE_COMMAND
         },
-        .msg_size = sizeof hdr
+        .msg_size = sizeof(hdr)
     };
-    size_t size = sizeof hdr;
+    size_t size = sizeof(hdr);
     int fds = 0;
     struct iovec _iovecs = { 0 };
     struct iovec *iovecs = NULL;
